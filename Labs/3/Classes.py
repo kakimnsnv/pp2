@@ -7,12 +7,13 @@
 
 # # Exercise 2
 
-# class Shape:
-#     def __init__(self) -> None:
-#         pass
-#     def area(self):
-#         return 0
+class Shape:
+    def __init__(self) -> None:
+        pass
+    def area(self):
+        return 0
     
+somhsdihg = Shape()
 # class Sqare(Shape):
 #     def __init__(self,length) -> None:
 #         super().__init__()

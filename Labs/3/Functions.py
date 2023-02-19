@@ -54,16 +54,16 @@
 #     for i in l:
 #         print(i, end = ' ')
 
-# # Exercise 7
-# def has_33(nums):
-#     for i in len(nums-1):
-#         if nums[i] == 3 and nums[i+1] == 3:
-#             return True
-#     return False
+# Exercise 7
+def has_33(nums):
+    for i in range(len(nums-1)):
+        if nums[i] == 3 and nums[i+1] == 3:
+            return True
+    return False
 
-# print(has_33([1,3,4]))
-# print(has_33([1,3,3]))
-# print(has_33([3,1,3]))
+print(has_33([1,3,4]))
+print(has_33([1,3,3]))
+print(has_33([3,1,3]))
 
 # Exercise 8
 
@@ -95,6 +95,9 @@
 #         return True
 #     return False
 
+# print(palindrome("asa"))
+# print(palindrome("ass"))
+# print(palindrome("asadasa"))
 # Exercise 12
 # def histogram(my_list): 
 #     for i in my_list:
