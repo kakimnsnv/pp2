@@ -1,4 +1,4 @@
-import random
+import random, cProfile, pstats 
 def Guess_the_number():
     cnt = 0
     print("Hello! What is your name?")
@@ -14,5 +14,6 @@ def Guess_the_number():
         print(msg)
         cnt += 1
     print(f"Good job, {name}! You guessed my number in {cnt} guesses!")
+
 
 Guess_the_number()
