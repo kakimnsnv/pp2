@@ -32,9 +32,9 @@
 #     print(x)
 
 # Exercise 5 - Implement a generator that returns all numbers from (n) down to 0.
-# n = int(input())
+n = int(input())
 
-# a = (x for x in range(n)[::-1])
+a = (x for x in range(n)[::-1])
 
-# for i in a:
-#     print(i)
+for i in a:
+    print(i)

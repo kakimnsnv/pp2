@@ -74,7 +74,7 @@ def test10(text):
 
 # test2(text) #working
 # test1(text) #working
-# test3(text) #working
+test3(text) #working
 # test4(text) #working
 # test5(text) #working
 # test6(text) #working
