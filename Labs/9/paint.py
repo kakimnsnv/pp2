@@ -1,4 +1,6 @@
-import pygame, os
+
+import math, os
+import pygame
 
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -14,8 +16,9 @@ color = BLACK
 last_color = BLACK
 mode = "draw"
 firsttap = False
-path = r"/Users/kakimbekn/Library/CloudStorage/OneDrive-АОКазахстанско-БританскийТехническийУниверситет/MyFiles/GitHub/pp2/Labs/8/assets"
+path = r"/Users/kakimbekn/Library/CloudStorage/OneDrive-АОКазахстанско-БританскийТехническийУниверситет/MyFiles/GitHub/pp2/Labs/9/assets"
 os.chdir(path)
+
 
 ###
 def main():
@@ -34,7 +37,7 @@ def main():
     pen = pygame.image.load("pen.png")
     pen = pygame.transform.scale(pen, (50, 50))
 
-    globalrect = pygame.Rect(895, -5, 150, 260)
+    globalrect = pygame.Rect(895, -5, 150, 410)
 
     eraserrect = pygame.Rect(950, 0, 50, 50)
 
@@ -52,10 +55,18 @@ def main():
 
     blackrect = pygame.Rect(900, 200, 50, 50)
 
-    while True:
+    squarerect = pygame.Rect(900, 300, 50, 50)
 
+    equitrirect = pygame.Rect(950, 300, 50, 50)
+
+    righttrirect = pygame.Rect(900, 350, 50, 50)
+
+    rombrect = pygame.Rect(950, 350, 50, 50)
+
+    while True:
+        
         pygame.draw.rect(screen, BLACK, globalrect)
-        pygame.draw.rect(screen, WHITE, (897, -3, 150, 254))
+        pygame.draw.rect(screen, WHITE, (897, -3, 150, 404))
         
         screen.blit(eraser, (950, 0))
         screen.blit(pen, (900, 0))
@@ -65,6 +76,23 @@ def main():
         
         pygame.draw.rect(screen, color, (900, 50, 47, 47))
         pygame.draw.rect(screen, WHITE, (903, 53, 41, 41))
+
+        pygame.draw.rect(screen, color, (900, 300, 47, 47))
+        pygame.draw.rect(screen, WHITE, (903, 303, 41, 41))
+
+        pygame.draw.polygon(screen, color, ((900, 350), (900, 397), (947, 397)))
+        pygame.draw.polygon(screen, WHITE, ((902, 354), (903, 394), (940, 393)))
+
+        pygame.draw.polygon(screen, color, ((950, 347), (975, 300), (1000, 347)))
+        pygame.draw.polygon(screen, WHITE, ((955, 342), (975, 305), (995, 342)))
+
+        pygame.draw.polygon(screen, color, ((975, 350), (950, 374), (975, 400), (1000, 374)))
+        pygame.draw.polygon(screen, WHITE, ((975, 354), (954, 374), (975, 396), (996, 374)))
+
+        
+
+        
+        
 
         pygame.draw.rect(screen, RED, redrect)
         pygame.draw.rect(screen, GREEN, greenrect)
@@ -114,6 +142,14 @@ def main():
                     mode = "draw_rect"
                 elif event.key == pygame.K_4:
                     mode = "draw_circle"
+                elif event.key == pygame.K_5:
+                    mode = "draw_square"
+                elif event.key == pygame.K_6:
+                    mode = "draw_righttriangle"
+                elif event.key == pygame.K_7:
+                    mode = "draw_equitriangle"
+                elif event.key == pygame.K_8:
+                    mode = "draw_romb"
                 
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -129,6 +165,14 @@ def main():
                     mode = "draw_rect"
                 elif circlerect.collidepoint(pos):
                     mode = "draw_circle"
+                elif squarerect.collidepoint(pos):
+                    mode = "draw_square"
+                elif equitrirect.collidepoint(pos):
+                    mode = "draw_equitriangle"
+                elif righttrirect.collidepoint(pos):
+                    mode = "draw_righttriangle"
+                elif rombrect.collidepoint(pos):
+                    mode = "draw_romb"
                 elif redrect.collidepoint(pos):
                     color = RED
                 elif greenrect.collidepoint(pos):
@@ -165,6 +209,14 @@ def main():
                         drawRect(screen, screen2, first_pos, event.pos)
                     if mode == "draw_circle":
                         drawCircle(screen, screen2, first_pos, event.pos)
+                    if mode == "draw_square":
+                        drawSquare(screen, screen2, first_pos, event.pos)
+                    if mode == "draw_righttriangle":
+                        drawRightTriangle(screen, screen2, first_pos, event.pos)
+                    if mode == "draw_equitriangle":
+                        drawEquiTriangle(screen, screen2, first_pos, event.pos)
+                    if mode == "draw_romb":
+                        drawRomb(screen, screen2, first_pos, event.pos)
                         
                 last_pos = event.pos                    
                 
@@ -215,7 +267,73 @@ def drawRect(screen, screen2, start, end):
     pygame.draw.rect(screen, color, pygame.Rect(lx, ly, rx - lx, ry - ly))
     
 ###
+
+def drawSquare(screen, screen2, start, end):
+
+    lx = min(end[0], start[0])
+    rx = max(end[0], start[0])
+    ly = min(end[1], start[1])
+    ry = max(end[1], start[1])
+    #upd screen backwards
+    screen.blit(screen2, (0, 0))
+    #a equals to lenght of one side
+    a = min(rx - lx, ry - ly)
+    pygame.draw.rect(screen, color, pygame.Rect(lx, ly, a, a))
     
+###
+
+def drawRightTriangle(screen, screen2, start, end):
+
+    lx = start[0]
+    rx = end[0]
+    ly = start[1]
+    ry = end[1]
+    #upd screen backwards
+    screen.blit(screen2, (0, 0))
+    #pygame.draw.polygon(screen, (0, 255, 255), ((25,75),(320,125),(250,375)))
+    pygame.draw.polygon(screen, color, ((lx, ly), (lx, ry), (rx, ry)))
+    
+###
+
+def drawEquiTriangle(screen, screen2, start, end):
+
+    lx = start[0]
+    rx = end[0]
+    ly = start[1]
+    ry = end[1]
+    #upd screen backwards
+    screen.blit(screen2, (0, 0))
+    #a equal to size of one side
+    a = rx - lx
+    y = ry - ly
+    while(abs(y) > 0.001 and abs(y) < abs(math.sqrt(3) * a / 2)):
+        if a > 0: a -= 0.001
+        else: a += 0.001
+    z = 0
+    if a > 0:
+        if y > 0: z = math.sqrt(3) * a / 2
+        elif y < 0: z = -1 * math.sqrt(3) * a / 2
+    elif a < 0:
+        if y > 0: z = abs(math.sqrt(3) * a / 2)
+        elif y < 0: z = math.sqrt(3) * a / 2
+    pygame.draw.polygon(screen, color, ((lx + a/2, ly), (lx, ly + z), (lx + a, ly + z)))
+    
+###
+
+def drawRomb(screen, screen2, start, end):
+
+    lx = min(end[0], start[0])
+    rx = max(end[0], start[0])
+    ly = min(end[1], start[1])
+    ry = max(end[1], start[1])
+    x = (rx - lx) / 2
+    y = (ry - ly) / 2
+    #upd screen backwards
+    screen.blit(screen2, (0, 0))
+    pygame.draw.polygon(screen, color, ((lx + x, ly), (lx, ly + y), (rx - x, ry), (rx, ry - y)))
+
+###
+
 def drawCircle(screen, screen2, start, end):
 
     x1 = min(end[0], start[0])

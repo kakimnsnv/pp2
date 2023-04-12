@@ -1,12 +1,12 @@
 import pygame
-import datetime
+import datetime, os
 pygame.init()
 w = 600
 h = 400
 angle1 = 0
 angle2 = 0
 
-
+os.chdir(r"/Users/kakimbekn/Library/CloudStorage/OneDrive-АОКазахстанско-БританскийТехническийУниверситет/MyFiles/GitHub/pp2/Labs/7")
 f_sys = pygame.font.SysFont('twcen',30)
 sc = pygame.display.set_mode((w,h),pygame.RESIZABLE)
 
@@ -15,9 +15,9 @@ pygame.display.set_caption("simple clock")
 white = (255,255,255)
 sc.fill(white)
 
-mickey_surf = pygame.image.load("assets/mickeyclock.jpg")
-left_hand_surf = pygame.image.load("assets/left_hand.png").convert_alpha()
-right_hand_surf = pygame.image.load("assets/right_hand.png").convert_alpha()
+mickey_surf = pygame.image.load(r"assets/mickeyclock.jpg")
+left_hand_surf = pygame.image.load(r"assets/left_hand.png").convert_alpha()
+right_hand_surf = pygame.image.load(r"assets/right_hand.png").convert_alpha()
 
 mickey_surf = pygame.transform.scale( mickey_surf ,(mickey_surf.get_width()//2.7 , mickey_surf.get_height()//2.7))
 clock = pygame.time.Clock()
