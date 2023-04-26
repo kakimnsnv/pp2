@@ -105,6 +105,16 @@ def game_over():
  
 # Main Function
 while True:
+    if score == 0:
+        snake_speed = 15
+    elif score == 60 or 70:
+        snake_speed = 20
+    elif score == 100 or 110:
+        snake_speed = 30
+    elif score == 150 or 160 or 170:
+        snake_speed = 40
+    elif score == 200 or 210 or 220:
+        snake_speed = 70
      
     # handling key events
     for event in pygame.event.get():
@@ -164,11 +174,10 @@ while True:
         
     bigFruit_timer += 1
     fruit_timer += 1
-    if fruit_timer == 75:
-        timer = 0
+    if fruit_timer == 80:
         fruit_position = [random.randrange(1, (window_x//10)) * 10,
                           random.randrange(1, (window_y//10)) * 10]
-    if bigFruit_timer == 75:
+    if bigFruit_timer == 80:
         bigFruit_position = [random.randrange(1, (window_x//10)) * 10,
                           random.randrange(1, (window_y//10)) * 10]
 
@@ -200,6 +209,7 @@ while True:
  
     # Refresh game screen
     pygame.display.update()
- 
+
+
     # Frame Per Second /Refresh Rate
     fps.tick(snake_speed) 

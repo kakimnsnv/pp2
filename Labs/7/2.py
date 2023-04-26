@@ -6,6 +6,7 @@ screen = pygame.display.set_mode((300, 500))
 clock = pygame.time.Clock()
 
 music = []
+os.chdir(r"/Users/kakimbekn/Library/CloudStorage/OneDrive-АОКазахстанско-БританскийТехническийУниверситет/MyFiles/GitHub/pp2/Labs/7")
 musicpath = os.listdir("assets")
 for i in musicpath:
     if i.endswith(".mp3"):
