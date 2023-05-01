@@ -3,35 +3,35 @@ import psycopg2
 from random import randint, randrange
 name = input() # вводим имя перед началом игры
 
-# config = psycopg2.connect(
-#     host='localhost', 
-#     database='sampledb',
-#     user='kakimbekn',
-#     password='Sadasa@2015'
-# )
-# current = config.cursor()
+config = psycopg2.connect(
+    host='localhost', 
+    database='sampledb',
+    user='kakimbekn',
+    password='Sadasa@2015'
+)
+current = config.cursor()
 
-# sql = '''
-#     SELECT * FROM users WHERE username = %s; 
-# '''
-# current.execute(sql, [name])
-# config.commit()
-# data = current.fetchone()
+sql = '''
+    SELECT * FROM users WHERE username = %s; 
+'''
+current.execute(sql, [name])
+config.commit()
+data = current.fetchone()
 
-# if data == None: # создаем начальные данные если игрока нет в базе данных
-#     sql = '''
-#         INSERT INTO users VALUES(%s, 0);
-#     '''
-#     current.execute(sql, [name])
-#     config.commit()
-# else: # если он уже есть в базе данных, высвечиваем в консоль его последний уровень
-#     sql = '''
-#     SELECT level FROM users WHERE username = %s;
-#     '''
-#     current.execute(sql, [name])
-#     final = current.fetchone()
-#     print(*final)
-#     config.commit()
+if data == None: # создаем начальные данные если игрока нет в базе данных
+    sql = '''
+        INSERT INTO users VALUES(%s, 0);
+    '''
+    current.execute(sql, [name])
+    config.commit()
+else: # если он уже есть в базе данных, высвечиваем в консоль его последний уровень
+    sql = '''
+    SELECT level FROM users WHERE username = %s;
+    '''
+    current.execute(sql, [name])
+    final = current.fetchone()
+    print(*final)
+    config.commit()
 
 
 pygame.init()
