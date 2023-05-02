@@ -1,4 +1,4 @@
-import pyrogram, psycopg2, os, random
+import pyrogram, psycopg2, os, re
 from psycopg2.extras import DictCursor
 from dotenv import load_dotenv
 load_dotenv()
@@ -35,6 +35,11 @@ TELEGRAM_API_HASH = os.getenv("TELEGRAM_API_HASH")
 
 # Variables--------------------------------------------------------------------------------
 id = ""
+name = ""
+surname = ""
+username = ""
+chatId = ""
+phoneNumber = ""
 messageId = 0
 
 newUsername = ""
@@ -42,6 +47,8 @@ newPhoneNumber = ""
 newChatId = ''
 newName = ''
 newSurname = ''
+
+phonePattern = "\d{11}|\d{10}|\d{1}[(]\d{3}[)]\d{7}|\d{1}[(]\d{3}[)]-\d{3}-\d{2}-\d{2}|\d{1}[(]\d{3}[)] \d{3} \d{2} \d{2}|[(]\d{3}[)]-\d{3}-\d{2}-\d{2}|[(]\d{3}[)] \d{3} \d{2} \d{2}|[(]\d{3}[)] \d{3}-\d{2}-\d{2}|[(]\d{3}[)]\d{7}"
 
 inline_keyboard = pyrogram.types.InlineKeyboardMarkup([
     [
@@ -68,6 +75,11 @@ register_keyboard = pyrogram.types.ReplyKeyboardMarkup([
 changeSurname = pyrogram.types.InlineKeyboardMarkup([
     [pyrogram.types.InlineKeyboardButton(text="Yes, I'm sure",callback_data="changeSurname")],
     [pyrogram.types.InlineKeyboardButton(text="Cancel", callback_data="cancel changeSurname")]
+    ])
+
+changeName = pyrogram.types.InlineKeyboardMarkup([
+    [pyrogram.types.InlineKeyboardButton(text="Yes, I'm sure",callback_data="changeName")],
+    [pyrogram.types.InlineKeyboardButton(text="Cancel", callback_data="cancel changeName")]
     ])
 
 bot_commands = [
@@ -100,8 +112,18 @@ bot = pyrogram.Client("ps5_28bot", api_id=TELEGRAM_API_ID, api_hash=TELEGRAM_API
 @bot.on_message(pyrogram.filters.command('start') & pyrogram.filters.private)
 def command_start(_, message):
     global id
+    global name
+    global surname
+    global username
+    global chatId
+
     id = str(message.from_user.id)
-    cursor.execute('SELECT * FROM users WHERE id = %s', (str(message.from_user.id),))
+    name = message.from_user.first_name
+    surname = message.from_user.last_name
+    username = message.from_user.username
+    chatId = message.chat.id
+
+    cursor.execute('SELECT phonenumber FROM users WHERE id = %s', (str(message.from_user.id),))
     if cursor.fetchone() == None:
         message.reply(
             '''Здравствуйте, это бот для управления плейстейшн клубом PS5_28, кажется вы у нас не зарегистрированы.''',
@@ -135,7 +157,10 @@ Also if you have any missing information or mistake you can set it by:
 def getme(bot, message):
     cursor.execute("SELECT * FROM users WHERE id = %s", (str(message.from_user.id),))
     res = cursor.fetchone()
-    message.reply(f'''id : {res[0]},
+    if res == []:
+        message.reply("Kажется вы у нас не зарегистрированы.")
+    else:
+        message.reply(f'''id : {res[0]},
 username : {res[1]},
 name : {res[2]},
 surname : {res[3]},
@@ -158,55 +183,115 @@ def setsurname(bot, message):
     from : {res[0][0]} 
     to : {message.command[1]}''', reply_markup=changeSurname)
 
+@bot.on_message(pyrogram.filters.command('setname') & pyrogram.filters.private)
+def setname(bot, message):
+    global newName
+    global messageId
+    messageId = message.id + 1
+    if len(message.command) == 1 or len(message.command) > 2:
+        message.reply('Usage of this command is /setname "name that you want to set".')
+    else:
+        cursor.execute('SELECT name FROM users WHERE id = %s', (str(message.from_user.id),))
+        res = cursor.fetchall()
+        newName = message.command[1]
+        message.reply(f'''You are going to change your name on database
+    from : {res[0][0]} 
+    to : {message.command[1]}''', reply_markup=changeName)
+
 
 @bot.on_callback_query()
-def registerCallback(Client, CallbackQuery):
+def Callback(Client, CallbackQuery):
     global newSurname
     global id
     global messageId
+    global newName
     if CallbackQuery.data == 'registerCallback':
         CallbackQuery.message.reply("Вы начали процесс регистрации. Для начала отправьте нам ваш номер", reply_markup=register_keyboard)
     elif CallbackQuery.data == 'changeSurname':
-        cursor.execute('UPDATE users SET surname = %s WHERE id = %s', (newSurname, id))
-        cursor.execute('SELECT chatid FROM users WHERE id = %s', (id,))
+        cursor.execute('UPDATE users SET surname = %s WHERE id = %s', (newSurname, str(CallbackQuery.from_user.id)))
+        cursor.execute('SELECT chatid FROM users WHERE id = %s', (str(CallbackQuery.from_user.id),))
         res = cursor.fetchall()[0][0]
         bot.edit_message_text(res, messageId,'''<i>You are going to change your surname on database...</i>
 
 Succesfully changed
 Try /getme again''')
     elif CallbackQuery.data == "cancel changeSurname":
-        cursor.execute('SELECT chatid FROM users WHERE id = %s', (id,))
+        cursor.execute('SELECT chatid FROM users WHERE id = %s', (str(CallbackQuery.from_user.id),))
         res = cursor.fetchall()[0][0]
-        bot.edit_message_text(res, messageId, '''<i>You are going to change your surname on database...</i>
+        bot.edit_message_text(res, messageId, '''<i>You are going to cahange your surname on database...</i>
 
 <b>Canceled</b>''')
-        
-        
-    
+    elif CallbackQuery.data == 'changeName':
+        cursor.execute('UPDATE users SET name = %s WHERE id = %s', (newName, str(CallbackQuery.from_user.id)))
+        cursor.execute('SELECT chatid FROM users WHERE id = %s', (str(CallbackQuery.from_user.id),))
+        res = cursor.fetchall()[0][0]
+        bot.edit_message_text(res, messageId,'''<i>You are going to change your name on database...</i>
+
+Succesfully changed
+Try /getme again''')
+    elif CallbackQuery.data == "cancel changeSurname":
+        cursor.execute('SELECT chatid FROM users WHERE id = %s', (str(CallbackQuery.from_user.id),))
+        res = cursor.fetchall()[0][0]
+        bot.edit_message_text(res, messageId, '''<i>You are going to cahange your name on database...</i>
+
+<b>Canceled</b>''')
     
 @bot.on_message(pyrogram.filters.contact)
 def contact(bot, message):
-    global phoneNumber
     global name
     global surname
     global username
     global chatId
     global id
 
-    name = message.from_user.first_name
-    surname = message.from_user.last_name
-    username = message.from_user.username
-    chatId = message.chat.id
-    phoneNumber = message.contact.phone_number
-    id = message.from_user.id
-
-
     cursor.execute('SELECT phonenumber FROM users WHERE username = %s', (username,))
-    if cursor.fetchone() == None:
+    if cursor.fetchall() == []:
+        phoneNumber = message.contact.phone_number
         SQLcontactRegister = f'INSERT INTO users VALUES(%s, %s, %s, %s, %s, %s);'
         cursor.execute(SQLcontactRegister, (id, username, name, surname, phoneNumber, chatId))
         message.reply('Вы зарегистрированы, введите команду "/start" заново')
+    else:
+        message.reply(f"You sent a contact !")
 
+
+@bot.on_message(pyrogram.filters.private)
+def onMessage(bot, message):
+    global id
+    global phoneNumber
+    res = re.findall(phonePattern, message.text)
+    if id != '' and phoneNumber != '':
+        message.reply(message.text)
+    elif id == "":
+        message.reply("You haven't registered yet. Please register first.")
+    elif res == [] and phoneNumber == "":
+        message.reply('''Напишите номер в одном из форматов:
+77777777777
+7777777777
+7(777)7777777
+7(777)-777-77-77
+7(777) 777 77 77
+(777)-777-77-77
+(777) 777 77 77
+(777) 777-77-77
+(777)7777777
+''')
+    elif res[0] != message.text:
+        message.reply('''Напишите номер в одном из форматов:
+77777777777
+7777777777
+7(777)7777777
+7(777)-777-77-77
+7(777) 777 77 77
+(777)-777-77-77
+(777) 777 77 77
+(777) 777-77-77
+(777)7777777
+''')
+    else:
+        phoneNumber = res[0]
+        SQLcontactRegister = f'INSERT INTO users VALUES(%s, %s, %s, %s, %s, %s);'
+        cursor.execute(SQLcontactRegister, (id, username, name, surname, phoneNumber, chatId))
+        message.reply('Вы зарегистрированы, введите команду "/start" заново')
 
 # ----------------------------------------------------------------------bot handlers
 
